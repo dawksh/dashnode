@@ -1,4 +1,4 @@
-import { fireAuth, googleProvider } from "../utils/firebase";
+import { fireAuth, googleProvider, DB } from "../utils/firebase";
 import { useRouter } from "next/router";
 import { Flex, Button, Heading, useColorModeValue } from "@chakra-ui/react";
 import Head from "next/head";
@@ -6,13 +6,30 @@ import { useAuthState } from "../utils/authState";
 
 function auth() {
   const router = useRouter();
-  const [isLoggedIn, uid] = useAuthState();
-  const login = () => {
+  const [isLoggedIn] = useAuthState();
+  const userCheck = async (uid) => {
+    await DB.collection("users")
+      .doc(uid)
+      .get()
+      .then((doc) => {
+        if (doc.exists) {
+          console.log("User Exists!");
+        } else {
+          db.collection("users").doc(uid).set({
+            uid: uid,
+            cids: [],
+          });
+        }
+      })
+      .catch((err) => console.log(err));
+    return true;
+  };
+  const login = async () => {
     fireAuth
       .signInWithPopup(googleProvider)
-      .then((res) => {
+      .then(async (res) => {
         var { uid } = res.user;
-        localStorage.setItem("uid", uid);
+        userCheck(uid);
         router.push("/app");
       })
       .catch((err) => {
