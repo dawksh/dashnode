@@ -17,8 +17,8 @@ import { DB, firebase } from "../utils/firebase";
 import { useAuthState } from "../utils/authState";
 
 function Dash() {
-  const [title, setTitle] = useState(null);
-  const [rawBody, setRawBody] = useState(null);
+  const [title, setTitle] = useState("");
+  const [rawBody, setRawBody] = useState("");
   const [parsedBody, setParsedBody] = useState(null);
   const [isPreview, setIsPreview] = useState(false);
   const [isLoggedIn, uid] = useAuthState();
@@ -52,6 +52,9 @@ function Dash() {
     const res = await usePublish(parsedBody);
     dbUpload(res);
     console.log(res);
+    setTitle("");
+    setRawBody("");
+    setParsedBody("");
     alert("published to ipfs network");
   };
 
@@ -75,8 +78,8 @@ function Dash() {
       </FormControl>
 
       {isPreview ? (
-        <Flex mt={5} flexDir="column" textAlign="center">
-          <Heading mb={2}>{title}</Heading>
+        <Flex mt={5} p={4} flexDir="column" textAlign="center">
+          <Heading mb={4}>{title}</Heading>
           <ReactMarkdown>{rawBody}</ReactMarkdown>
         </Flex>
       ) : (
@@ -93,7 +96,7 @@ function Dash() {
             mt={5}
             fontSize={20}
             minHeight={96}
-            placeholder="Your story goes here. (Shhh, don't tell anyone but I support Markdown!) (You might have trouble viewing headings in markdown, will soon fix that :)"
+            placeholder="Your story goes here. (Shhh, don't tell anyone but I support Markdown!) (You might have trouble viewing headings in markdown preview, will soon fix that :)"
             onChange={(e) => updateBody(e)}
             value={rawBody}
           />
