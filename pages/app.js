@@ -3,9 +3,12 @@ import { Heading, Flex, Button } from "@chakra-ui/react";
 import Link from "next/link";
 import { fireAuth } from "../utils/firebase";
 import { useRouter } from "next/router";
+import { useEffect } from "react";
+
+import RecentLayout from "../components/RecentLayout";
 
 function app() {
-  const [isLoggedIn] = useAuthState();
+  const [isLoggedIn, uid] = useAuthState();
   const router = useRouter();
   const signOut = () => {
     fireAuth.signOut();
@@ -29,6 +32,7 @@ function app() {
         >
           Logout
         </Button>
+        <RecentLayout uid={uid} />
       </Flex>
     );
   } else {

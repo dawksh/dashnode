@@ -39,23 +39,27 @@ function Dash() {
     );
   };
 
-  const dbUpload = async ({ data }) => {
+  const dbUpload = async (data) => {
     DB.collection("users")
       .doc(uid)
       .update({
-        cid: firebase.firestore.FieldValue.arrayUnion(data),
+        posts: firebase.firestore.FieldValue.arrayUnion(data),
       });
   };
 
   const publishHandler = async (e) => {
     e.preventDefault();
     const res = await usePublish(parsedBody);
-    dbUpload(res);
+    const uploadData = {
+      cid: res.data,
+      title: title,
+    };
+    dbUpload(uploadData);
     console.log(res);
     setTitle("");
     setRawBody("");
     setParsedBody("");
-    alert("published to ipfs network");
+    alert("Published to IPFS network");
   };
 
   return (

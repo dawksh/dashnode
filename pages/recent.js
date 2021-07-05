@@ -1,7 +1,7 @@
 import { Flex, Heading } from "@chakra-ui/react";
 import { useAuthState } from "../utils/authState";
 import { useState, useEffect } from "react";
-import { DB } from "../utils/firebase";
+import { DB, fireAuth } from "../utils/firebase";
 import Head from "next/head";
 
 const recent = () => {
@@ -9,25 +9,28 @@ const recent = () => {
 	const [loading, setLoading] = useState(true);
 	const [isLoggedIn, uid] = useAuthState();
 
-	useEffect((uid) => {
-		setTimeout(() => {
-			DB.collection("users")
-				.doc(uid)
-				.get()
-				.then((doc) => {
-					if (doc.exists) {
-						const { cid } = doc.data();
-						setPosts(cid);
-						setLoading(false);
-					} else {
-						console.log("Document not found");
-					}
-				})
-				.catch((err) => {
-					console.log(err);
-				});
-		}, 2000);
-	});
+	useEffect(() => {
+		const getPosts = async () => {
+			if (typeof uid != null) {
+				DB.collection("users")
+					.doc(uid)
+					.get()
+					.then((doc) => {
+						if (doc.exists) {
+							setPosts(doc.data());
+						} else {
+							console.log("Error getting data");
+						}
+					})
+					.catch((err) => {
+						console.log(err);
+					});
+			} else {
+				return false;
+			}
+		};
+		getPosts();
+	}, [uid]);
 
 	if (isLoggedIn == true) {
 		return (
@@ -56,5 +59,18 @@ const recent = () => {
 		);
 	}
 };
+
+export async function getServerSideProps(context) {
+	let uid;
+
+	fireAuth.onAuthStateChanged((user) => {
+		if (user) {
+			uid = user.uid;
+		}
+	});
+	return {
+		props: { uid }, // will be passed to the page component as props
+	};
+}
 
 export default recent;
