@@ -30,8 +30,11 @@ function Dash() {
       <html>
       <head>
       <title>${title}</title>
+      <link rel="stylesheet" href="https://ipfs.io/ipfs/QmcPtxbRz1fGFxiHctPrLuYhQdBjQJmQxhyqRwKeoJuTzU" />
       </head>
       <body>
+      <h1>${title}</h1>
+      <hr />
       ${converter.makeHtml(e.target.value)}
       </body>
       </html>
